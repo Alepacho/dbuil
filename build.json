@@ -1,0 +1,29 @@
+{
+  "variables" : {
+    "CC": "g++",
+    "CFLAGS": "-std=c++17 -Wall -g",
+    "IPATH": "./inc",
+    "SRC": "./src/"
+  },
+  "targets": [
+    {
+      "name": "run",
+      "commands": [ "./build" ]
+    },
+    {
+      "name": "all",
+      "force": true,
+      "targets": [ "main" ],
+      "commands": []
+    },
+    {
+      "name": "main",
+      "onchange": [ "${SRC}main.cpp" ],
+      "commands": [ "${CC} ${CFLAGS} ${SRC}main.cpp ${IPATH}/md5.cpp -I${IPATH} -o build" ]
+    },
+    {
+      "name": "clean",
+      "commands": [ "rm -rf build" ]
+    }
+  ]
+}

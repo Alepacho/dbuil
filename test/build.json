@@ -1,0 +1,47 @@
+{
+  "variables" : {
+    "CC": "g++",
+    "SRC": ".",
+    "OUTPATH": "out"
+  },
+  "targets": [
+    {
+      "name": "all",
+      "description": "compiles all files (ignores onchange)",
+      "force": true,
+      "targets": [ "clean", "main" ],
+      "commands": []
+    },
+    {
+      "name": "other",
+      "description": "just like all target, but doesn't ignore onchange",
+      "targets": [ "clean", "main" ],
+      "commands": []
+    },
+    {
+      "name": "main",
+      "description": "compiles only when main.cpp was changed",
+      "targets": [ "foo" ],
+      "onchange": [ "${SRC}/main.cpp" ],
+      "commands": [
+        "${CC} ${SRC}/main.cpp ${OUTPATH}/foo.o -o main"
+      ]
+    },
+    {
+      "name": "foo",
+      "description": "compiles only when foo.cpp was changed",
+      "onchange": [ "${SRC}/foo.cpp" ],
+      "commands": [
+        "mkdir -p ${OUTPATH}",
+        "${CC} ${SRC}/foo.cpp -c -o ${OUTPATH}/foo.o"
+      ]
+    },
+    {
+      "name": "clean",
+      "description": "clean binary and .o files",
+      "commands": [
+        "rm -rf main ${OUTPATH}"
+      ]
+    }
+  ]
+}
