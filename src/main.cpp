@@ -20,7 +20,7 @@ namespace show {
         cout << "Options:" << endl;
         cout << "   " << left << setw(16) << "-help"    << left << setw(6) << " Show info." << endl;
         cout << "   " << left << setw(16) << "-targets" << left << setw(6) << " Show all available targets." << endl;
-        cout << "   " << left << setw(16) << "-force"   << left << setw(6) << " Ignore onchange." << endl;
+        cout << "   " << left << setw(16) << "-force"   << left << setw(6) << " Ignore 'onchange' parameter." << endl;
     }
 
     void targets(json& js) {
@@ -171,6 +171,19 @@ bool execute(json& js, string name = "all") {
             string cmd;
             for (auto& a : t["commands"]) {
                 array<char, 128> buffer;
+
+                // apply 'directory' parameter 
+                auto path = fs::current_path();
+                if (t["directory"].is_string()) {
+                    auto dir = parse(js, t["directory"]);
+                    try {
+                        fs::current_path(dir);
+                    } catch(fs::filesystem_error& er) {
+                        cerr << "build: Execute error: No such file or directory '" << dir << "'" << endl;
+                        exit(1);
+                    }
+                }
+
                 string cmd = parse(js, (string)a);
                 cout << cmd << endl;
                 cmd.append(" 2>&1");
@@ -187,6 +200,7 @@ bool execute(json& js, string name = "all") {
                 // if (rc != EXIT_SUCCESS) {
                 //     return true;
                 // }
+                fs::current_path(path);
             }
             height--;
             if (height == 0) force = false;
