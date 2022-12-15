@@ -13,6 +13,10 @@ using namespace std;
 bool force  = false; // ignore onchange 
 int height  = 0;     // height in additional target
 
+bool   changed(string fpath);
+string variable(json& js, string name);
+string parse(json& js, string cmd);
+
 namespace show {
     void info() {
         cout << "Build made by Alepacho, 2022" << endl;
@@ -105,11 +109,13 @@ string variable(json& js, string name) {
     if (!var.is_null()) {
         switch (var.type()) {
             case nlohmann::detail::value_t::string: {
-                return var;
+                return parse(js, var);
             } break;
             default:
                 return "";
         }
+    } else {
+        cerr << "build::warning: unable to find variable '" << name << "'" << endl;
     }
 
     return "";
@@ -179,7 +185,7 @@ bool execute(json& js, string name = "all") {
                     try {
                         fs::current_path(dir);
                     } catch(fs::filesystem_error& er) {
-                        cerr << "build::execute error: No such file or directory '" << dir << "'" << endl;
+                        cerr << "build::error: No such file or directory '" << dir << "' while execute '" <<  name << "' target." << endl;
                         exit(1);
                     }
                 }

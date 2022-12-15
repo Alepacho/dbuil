@@ -1,9 +1,11 @@
 {
   "variables" : {
     "CC": "g++",
-    "CFLAGS": "-std=c++17 -Wall -g",
+    "CFLAGS": "-std=c++17 -Wall -g -O2",
     "IPATH": "./inc",
-    "SRC": "./src/"
+    "SRC": "./src/",
+    "TEST": "./tes${T}",
+    "T": "t"
   },
   "targets": [
     {
@@ -27,7 +29,7 @@
     },
     {
       "name": "test",
-      "directory": "test",
+      "directory": "${TEST}",
       "commands": [
         "cp ../build ./build",
         "./build main"

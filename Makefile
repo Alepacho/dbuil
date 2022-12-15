@@ -1,5 +1,5 @@
 CC     = clang++
-CFLAGS = -std=c++17 -Wall -g
+CFLAGS = -std=c++17 -Wall -g -O2
 IPATH  = ./inc
 
 all: clean
