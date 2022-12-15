@@ -40,7 +40,7 @@ namespace show {
 string get_file_data(string filepath) {
     ifstream in(filepath);
     if (!in.is_open()) {
-        cerr << "build::warning: Unable to open '" << filepath << "' file!" << endl;
+        cerr << "build::error: Unable to open '" << filepath << "' file!" << endl;
         return "";
     }
 
@@ -259,21 +259,18 @@ bool is_invalid(json& js) {
 }
 
 int main(int argc, char* argv[]) {
-    fstream f("build.json");
-    if (!f.is_open()) {
-        cerr << "build::error: No 'build.json' found!" << endl;
+    json js;
+    string f = get_file_data("build.json");
+    if (f.length() == 0) {
         return 1;
     }
-
-    json js;
+    
     try {
-        f >> js;
-    } catch (json::parse_error& ex) {
+        js = json::parse(f, nullptr, true, true);
+    } catch(json::parse_error& ex) {
         cerr << "build::error: Parse error: " << ex.what() << endl;
         return 1;
     }
-
-    f.close();
 
     auto targets = js["targets"];
     if (targets.is_null() || targets.empty()) {
