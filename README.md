@@ -1,5 +1,5 @@
 # BUILD
-BUILD is a small build automation program with the ability to compile only changed source files.
+BUILD is a small build automation program. It's like Make, but uses json instead of Makefile.
 
 # Example
 
