@@ -20,7 +20,7 @@ namespace show {
         cout << "Options:" << endl;
         cout << "   " << left << setw(16) << "-help"    << left << setw(6) << " Show info." << endl;
         cout << "   " << left << setw(16) << "-targets" << left << setw(6) << " Show all available targets." << endl;
-        cout << "   " << left << setw(16) << "-force"   << left << setw(6) << " Ignore 'onchange' parameter." << endl;
+        cout << "   " << left << setw(16) << "-force"   << left << setw(6) << " Ignore 'onchange' parameter for next target." << endl;
     }
 
     void targets(json& js) {
@@ -36,7 +36,7 @@ namespace show {
 string get_file_data(string filepath) {
     ifstream in(filepath);
     if (!in.is_open()) {
-        cerr << "build: Warning: unable to open '" << filepath << "' file!" << endl;
+        cerr << "build::warning: Unable to open '" << filepath << "' file!" << endl;
         return "";
     }
 
@@ -67,7 +67,7 @@ bool changed(string fpath) {
     ofstream out(".build/changes.json");
 
     if (!out.is_open()) {
-        cerr << "build: Warning: unable to open '" << ".build/changes.json" << "' file!" << endl;
+        cerr << "build::warning: unable to open '" << ".build/changes.json" << "' file!" << endl;
         return true;
     }
 
@@ -145,11 +145,11 @@ bool execute(json& js, string name = "all") {
             if (!t["targets"].empty()) {
                 for (auto& tt : t["targets"]) {
                     if (!tt.is_string()) {
-                        cerr << "build: Error: data in additional targets of '" << name << "' should be assigned as string!" << endl;
+                        cerr << "build::error: data in additional targets of '" << name << "' should be assigned as string!" << endl;
                         return true;
                     }
                     if (tt == name) {
-                        cerr << "build: Error: self additional target detected at '" << name << "'!" << endl;
+                        cerr << "build::error: self additional target detected at '" << name << "'!" << endl;
                         return true;
                     }
                     if (execute(js, tt)) return true;
@@ -179,7 +179,7 @@ bool execute(json& js, string name = "all") {
                     try {
                         fs::current_path(dir);
                     } catch(fs::filesystem_error& er) {
-                        cerr << "build: Execute error: No such file or directory '" << dir << "'" << endl;
+                        cerr << "build::execute error: No such file or directory '" << dir << "'" << endl;
                         exit(1);
                     }
                 }
@@ -188,7 +188,7 @@ bool execute(json& js, string name = "all") {
                 cout << cmd << endl;
                 cmd.append(" 2>&1");
                 auto pipe = popen(cmd.c_str(), "r");
-                if (!pipe) throw runtime_error("build: execute failed: " + cmd);
+                if (!pipe) throw runtime_error("build:error: execute failed: " + cmd);
 
                 // output cout in popen
                 while (fgets(buffer.data(), 128, pipe) != NULL) {
@@ -209,7 +209,7 @@ bool execute(json& js, string name = "all") {
     }
     
 
-    cerr << "build: Error: target '" << name << "' doesn't exist!" << endl;
+    cerr << "build::error: target '" << name << "' doesn't exist!" << endl;
     return true;
 }
 
@@ -218,29 +218,29 @@ bool is_invalid(json& js) {
     auto targets = js["targets"];
     for (auto& t : targets) {
         if (!t.is_object()) {
-            cerr << "build: Parse error: data inside 'targets' should be assigned as object." << endl;
+            cerr << "build::error: Parse error: data inside 'targets' should be assigned as object." << endl;
             invalid = true;
         } else {
             if (t["name"].is_null()) {
-                cerr << "build: Parse error: found target with no name." << endl;
+                cerr << "build::error: Parse error: found target with no name." << endl;
                 invalid = true;
             } else {
                 if (!t["name"].is_string()) {
-                    cerr << "build: Parse error: 'name' should be assigned as string." << endl;
+                    cerr << "build::error: Parse error: 'name' should be assigned as string." << endl;
                     invalid = true;
                 }
             }
             if (t["commands"].is_null()) {
-                cerr << "build: Parse error: found target with no commands." << endl;
+                cerr << "build::error: Parse error: found target with no commands." << endl;
                 invalid = true;
             } else {
                 if (!t["commands"].is_array()) {
-                    cerr << "build: Parse error: 'commands' should be assigned as array." << endl;
+                    cerr << "build::error: Parse error: 'commands' should be assigned as array." << endl;
                     invalid = true;
                 } else {
                     for (auto& a : t["commands"]) {
                         if (!a.is_string()) {
-                            cerr << "build: Parse error: data inside 'commands' should be assigned as string." << endl;
+                            cerr << "build::error: Parse error: data inside 'commands' should be assigned as string." << endl;
                             invalid = true;
                         }
                     }
@@ -255,7 +255,7 @@ bool is_invalid(json& js) {
 int main(int argc, char* argv[]) {
     fstream f("build.json");
     if (!f.is_open()) {
-        cerr << "build: No 'build.json' found!" << endl;
+        cerr << "build::error: No 'build.json' found!" << endl;
         return 1;
     }
 
@@ -263,7 +263,7 @@ int main(int argc, char* argv[]) {
     try {
         f >> js;
     } catch (json::parse_error& ex) {
-        cerr << "build: Parse error: " << ex.what() << endl;
+        cerr << "build::error: Parse error: " << ex.what() << endl;
         return 1;
     }
 
@@ -271,12 +271,12 @@ int main(int argc, char* argv[]) {
 
     auto targets = js["targets"];
     if (targets.is_null() || targets.empty()) {
-        cerr << "build: No targets or empty targets." << endl;
+        cerr << "build::error: No targets or empty targets." << endl;
         return 1;
     }
 
     if (!targets.is_array()) {
-        cerr << "build: Parse error: 'targets' should be assigned as array." << endl;
+        cerr << "build::error: Parse error: 'targets' should be assigned as array." << endl;
         return 1;
     }
 
@@ -296,13 +296,13 @@ int main(int argc, char* argv[]) {
             }
 
             if (execute(js, argv[i])) {
-                cerr << "build: Target error: target '" << argv[i] << "' got error!" << endl;
+                cerr << "build::error: Target error: target '" << argv[i] << "' got error!" << endl;
                 return 1;
             }
         }
     } else {
         if (execute(js)) {
-            cerr << "build: Target error: target '" << "all" << "' got error!" << endl;
+            cerr << "build::error: Target error: target '" << "all" << "' got error!" << endl;
             return 1;
         }
     }
