@@ -5,3 +5,5 @@
 build.dSYM
 build
 compile_commands.json
+test/main
+test/out

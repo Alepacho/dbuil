@@ -24,6 +24,14 @@
     {
       "name": "clean",
       "commands": [ "rm -rf build" ]
+    },
+    {
+      "name": "test",
+      "directory": "test",
+      "commands": [
+        "cp ../build ./build",
+        "./build main"
+      ]
     }
   ]
 }
