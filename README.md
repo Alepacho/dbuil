@@ -1,9 +1,9 @@
-# BUILD
-BUILD is a small build automation program. It's like Make, but uses json instead of Makefile.
+# DBUIL
+DBUIL is a small build automation program. It's like Make, but uses json instead of Makefile.
 
 # Example
 
-This is an example of how `build.json` file look like:
+This is an example of how `dbuil.json` file look like:
 ```json
 {
   "variables" : {
@@ -19,8 +19,8 @@ This is an example of how `build.json` file look like:
 }
 ```
 
-See other examples in `build.json` and `test` folder.
+See other examples in `dbuil.json` and `test` folder.
 
 # How to use
-Just type `./build -help` to see all available commands.
+Just type `./dbuil -help` to see all available commands.
 
